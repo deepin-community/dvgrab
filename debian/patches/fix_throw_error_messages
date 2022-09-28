@@ -1,0 +1,35 @@
+From: Erik Schanze <eriks@debian.org>
+Description: Fixes not working throw of a string, so first print the message and
+than throw the exception. This is similar behaviour than before.
+
+--- a/error.cc
++++ b/error.cc
+@@ -114,7 +114,8 @@
+ 			sb << endl << file << ":" << line << ": errno: " << errno << " (" << strerror( errno ) << ")";
+ 		sb << ends;
+ 		exc = sb.str();
+-		throw exc;
++		std::cerr << "Error: " << exc;
++		throw;
+ 	}
+ }
+ 
+@@ -136,7 +137,8 @@
+ 
+ 		sb << file << ":" << line << ": In function \"" << func << "\": " << eval_str << " is NULL" << ends;
+ 		exc = sb.str();
+-		throw exc;
++		std::cerr << "Error: " << exc;
++		throw;
+ 	}
+ }
+ 
+@@ -154,6 +156,7 @@
+ 			sb << endl << file << ":" << line << ": errno: " << errno << " (" << strerror( errno ) << ")";
+ 		sb << ends;
+ 		exc = sb.str();
+-		throw exc;
++		std::cerr << "Error: " << exc;
++		throw;
+ 	}
+ }

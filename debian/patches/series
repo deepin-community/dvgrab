@@ -1,0 +1,3 @@
+remove_warnings_from_manpage
+fix_help_message
+fix_throw_error_messages

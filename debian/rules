@@ -1,0 +1,80 @@
+#!/usr/bin/make -f
+# dvgrab debian/rules script
+# adapted from Joey Hess's debhelper example by Daniel Kobras
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
+CFLAGS += -Wall
+
+confflags += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+        NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+        MAKEFLAGS += -j$(NUMJOBS)
+endif
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	dh_autoreconf
+	CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confflags) --prefix=/ --exec-prefix=/usr
+
+	touch configure-stamp
+
+build-arch: build
+build-indep: build
+
+build: build-stamp
+build-stamp: configure-stamp
+	dh_testdir
+
+	$(MAKE) dvgrab
+
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+
+	[ ! -f Makefile ] || $(MAKE) distclean
+	dh_autoreconf_clean
+
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+
+	$(MAKE) DESTDIR=`pwd`/debian/dvgrab install-exec
+
+
+# Build architecture-independent files here.
+binary-indep: build install
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+	dh_installman dvgrab.1 debian/dvgrab.de.1
+	dh_installchangelogs ChangeLog
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+
+.PHONY: build build-arch build-indep clean binary-indep binary-arch binary install configure do-clean

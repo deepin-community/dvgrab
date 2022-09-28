@@ -1,0 +1,18 @@
+Source: dvgrab
+Section: video
+Priority: extra
+Maintainer: Erik Schanze <eriks@debian.org>
+Build-Depends: debhelper (>= 9.0), libdv4-dev (>= 1.0.0), libjpeg-dev, libquicktime-dev (>= 2:1.0.0+debian), libraw1394-dev (>= 1.1.0), libavc1394-dev (>= 0.5.1), libiec61883-dev (>= 1.0.0), zlib1g-dev, dh-autoreconf, quilt, pkg-config
+Standards-Version: 3.9.8
+Homepage: http://www.kinodv.org/
+
+Package: dvgrab
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: grab digital video data via IEEE1394 and USB links
+ dvgrab receives audio and video data from a digital camcorder via an
+ IEEE1394 (widely known as FireWire) or USB link and stores them into
+ one of several file formats. It features autosplit of long video
+ sequences, and supports saving the data as raw frames, AVI type 1,
+ AVI type 2, Quicktime DV, a series of JPEG stills or MPEG2-TS.
+

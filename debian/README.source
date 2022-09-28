@@ -1,0 +1,4 @@
+This package uses the `dpatch' patch management solution. See
+/usr/share/doc/dpatch/README.source.gz.
+
+ -- Erik Schanze <eriks@debian.org>  Sun,  1 Nov 2009 13:47:21 +0100

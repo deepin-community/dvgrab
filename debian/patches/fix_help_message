@@ -1,0 +1,14 @@
+From: <eriks@debian.org>
+Description: Added a sleep to give cerr a chance to flush. The help message
+will not be complete otherwise.
+
+--- a/dvgrab.cc
++++ b/dvgrab.cc
+@@ -241,6 +241,7 @@
+ 	cerr << "  -timecode            put the first frame's timecode into the file name" << endl;
+ 	cerr << "  -t, -timestamp       put the date and time of recording into the file name" << endl;
+ 	cerr << "  -timesys             put the system date and time into the file name" << endl;
++	usleep(10000);
+ #ifdef HAVE_LINUX_VIDEODEV2_H
+ 	cerr << "  -V, -v4l2            capture DV from V4L2 USB device (linux-uvc)" << endl;
+ 	cerr << "                          use -input to set device file [default " << DEFAULT_V4L2_DEVICE << "]" << endl;

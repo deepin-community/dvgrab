@@ -1,0 +1,433 @@
+.TH "DVGRAB" "1" "21. September 2008" "dvgrab-3.2" ""
+
+.SH "NAME"
+dvgrab \(em Importiert DV oder MPEG2-Transport-Stream (HDV) Video\-
+und Tondaten \[:u]ber FireWire\- und USB\-Verbindungen
+
+.SH "\[:U]BERSICHT"
+\fBdvgrab\fP [\fIOptionen\fP] [\fIBasis\fP] [-]
+
+.SH "BESCHREIBUNG"
+\fBdvgrab\fP ist ein Programm, mit dem DV oder HDV (MPEG2-TS) Video\-
+und Audiodaten von einem digitalen Camcorder via IEEE1394\-Verbindung
+importiert werden k\[:o]nnen. Die Daten werden in einer oder mehreren
+Dateien gespeichert und k\[:o]nnen sp\[:a]ter mit einem
+Videobearbeitungsprogramm weiter verarbeitet werden.
+\fBdvgrab\fP kann den Camcorder fernsteuern, aber zeigt das
+Videomaterial nicht auf dem Bildschirm an.
+.PP
+\fBdvgrab\fP unterst\[:u]tzt auch UVC-kompatible (USB Video Class)
+DV\-Ger\[:a]te durch das Linux-Kernelmodul »uvcvideo«, einen V4L2\-Treiber.
+Dabei gibt es aber keine Steuerung über AV/C, deshalb ist der
+interaktive Modus ziemlich nutzlos.
+.PP
+Aus dem Argument \fBBasis\fP wird der Dateiname der Videodatei
+zusammengesetzt: \fIBasis\fP-\fIZahl\fP.\fIErw\fP. \fBZahl\fP ist
+eine bei 001 beginnende fortlaufende Nummer und \fBErw\fP eine
+Dateinamenserweiterung, die vom benutzten Dateiformat
+abh\[:a]ngt, z.\ B. avi.
+Die Namensgebung weicht davon ab, wenn die Option \fB-timestamp\fP,
+\fB-timecode\fP oder \fB-timesys\fP verwendet wird (siehe unten).
+Wenn \fBBasis\fP ein vollst\[:a]ndiger Dateiname einschlie\[ss]lich
+einer Namenserweiterung ist, dann versucht \fBdvgrab\fP das
+Ausgabeformat von dieser Erweiterung abzuleiten, aber es f\[:u]gt
+trotzdem \fIZahl\fP ein. Die voreingestellte \fBBasis\fP ist
+\fBdvgrab\-\fP, wenn keine andere angegeben wurde.
+.PP
+Wenn als \fBBasis\fP das Zeichen '\-' verwendet wird, gibt \fBdvgrab\fP
+die unver\[:a]nderten DV\- oder HDV\-Daten auf die Standardausgabe aus.
+Wenn das Video in eine Datei importiert wird, werden die Daten auch auf die
+Standardausgabe geschrieben, wenn die Standardausgabe an eine Pipe
+angeschlossen oder umgeleitet ist.
+.PP
+Sie k\[:o]nnen \fBdvgrab's\fP leistungsf\[:a]hige Datei\-Schreibfunktionen
+auch f\[:u]r andere Programme nutzen, die unver\[:a]nderte DV\- oder HDV\-Daten
+erzeugen. Benutzen Sie daf\[:u]r die Option \fB-stdin\fP und \fBdvgrab\fP
+versucht die DV\- oder HDV\-Daten von der Standardeingabe zu lesen, wenn es
+erkennt, dass es am Ausgang einer Pipe h\[:a]ngt und nicht interaktiv
+betrieben wird.
+.SH "OPTIONEN"
+Optionen, die l\[:a]nger als ein Buchstabe sind, k\[:o]nnen durch einen oder zwei
+f\[:u]hrende Bindestriche angegeben werden.
+Optionsname und Argumentwert k\[:o]nnen durch Leerzeichen oder
+Gleichheitszeichen getrennt werden.
+
+.IP "\fB-a \fP[\fIZahl\fP], \fB-autosplit \fP[\fIZahl\fP]" 10
+Es wird versucht den Anfang jeder neuen Aufnahme zu erkennen und
+in einzelnen Dateien zu speichern. Das kann mit den Optionen
+\fB-frames\fP und \fB-size\fP kombiniert werden und mit einer neuen
+Datei wird begonnen, wenn eins der angegebenen Ereignisse eintritt.
+Automatisches Teilen ist normalerweise ausgeschaltet.
+
+Die Angabe von \fIZahl\fP ist optional. Ohne diese Angabe findet \fBdvgrab\fP
+anhand einer Signalisierung im Datenstrom oder einer Unterbrechung in den
+Zeitstempeln selbst heraus, wann eine neue Datei beginnen soll. Dabei muss der
+Zeitsprung r\[:u]ckw\[:a]rts sein oder vorw\[:a]rts mehr als 1 Sekunde
+betragen.
+Durch die Angabe von \fIZahl\fP kann die Dauer des Zeitsprungs eingestellt
+werden und die Signalisierung einer neuen Aufnahme im Datenstrom wird nicht
+mehr beachtet. Dadurch kann man die Aufnahme an gr\[:o]\[ss]eren
+Zeitspr\[:u]ngen, wie Minuten oder Stunden, teilen lassen.
+
+Beispiel: \fI-autosplit=3600\fP teilt die Aufnahme in mehrere Dateien, wenn
+sie Zeitspr\[:u]nge von 1 Stunde oder l\[:a]nger enth\[:a]lt.
+
+.IP "\fB-buffers \fP\fIZahl\fP" 10
+Die Anzahl der wegen I/O\-Verz\[:o]gerungen zwischengespeicherten Frames.
+Voreingestellt ist 100.
+
+.IP "\fB-card \fP\fIZahl\fP" 10
+\fBdvgrab\fP empf\[:a]ngt die Daten von der FireWire\-Karte mit der Nummer
+\fIZahl\fP. Standardm\[:a]\[ss]ig wird die erste Karte mit der ersten gefundenen
+Kamera verwendet.
+In Verbindung mit der Option \fB-noavc\fP wird der Bus nicht abgesucht.
+In Verbindung mit der Option \fB-guid\fP \fIHex-Zahl\fP wird nur der angegebene
+Bus nach einem Ger\[:a]t mit der GUID \fIHex-Zahl\fP abgesucht.
+
+.IP "\fB-channel \fP\fIZahl\fP" 10
+Isochroner Kanal, von dem die Daten empfangen werden. Voreingestellt ist 63, das
+ist so \[:u]blich bei DV\-Camcordern heutzutage. Wenn Sie etwas anderes
+angeben, wird dem Ger\[:a]t zur Zeit nicht mitgeteilt, welchen Kanal es nutzen
+soll. Sie m\[:u]ssen dem Ger\[:a]t selbst \[:u]bermitteln, welcher Kanal genutzt wird.
+
+.IP "\fB-cmincutsize \fP\fIZahl\fP" 10
+Diese Option bewirkt, dass eine Teilung und der Beginn einer neuen
+Zusammenstellung \fIZahl\fP Megabyte (eigentlich Mebibyte) vor dem Ende der aktuellen
+Zusammenstellung erfolgt. Diese Option kann verhindern, dass kleine
+Dateien entstehen, wenn die Option \fB-csize\fP benutzt wird. Wenn
+eine neue Zusammenstellung auf diese Weise begonnen wird, merkt sich das
+Programm den frei gebliebenen Speicherplatz. Sollte die neue Zusammenstellung
+dort hinein passen, wird der neue Startpunkt zur\[:u]ck gesetzt.
+
+.IP "\fB-csize \fP\fIZahl\fP" 10
+Diese Option veranlasst \fBdvgrab\fP Dateien zu teilen, wenn eine
+Zusammenstellung von Dateien \fIZahl\fP Megabyte \[:u]berschreitet.
+Damit k\[:o]nnen Dateien aneinander gereiht werden und sie passen genau in
+\fIZahl\fP Megabyte (eigentlich Mebibyte) (z.\ B. zum Archivieren auf DVD).
+Wenn die Grenze erreicht wird, beginnt eine neue Zusammenstellung.
+(Siehe auch Option \fB-cmincutsize\fP)
+
+.IP "\fB-debug \fP\fITyp\fP" 10
+Zeigt HDV-Debug-Informationen an, \fITyp\fP ist einer oder mehrere von:
+all,pat,pmt,pids,pid=N,pes,packet,video,sonya1
+
+.IP "\fB-d, -duration \fP\fIZeit\fP" 10
+Setzt die maximale Dauer des Imports inklusive aller Teildateien f\[:u]r
+einen einzelnen Import\-Vorgang (mehrfache Vorg\[:a]nge sind im interaktiven
+Modus m\[:o]glich).
+Der Wert \fIZeit\fP wird im »SMIL2 MediaClipping«\-Zeitformat angegeben.
+.br
+Siehe http://w3.org/AudioVideo/ f\[:u]r die Spezifikation.
+.IP "" 10
+Kurz beschrieben ist das Format:
+.IP "" 10
+XXX[.Y]h, XXX[.Y]min, XXX[.Y][s], XXXms,
+.IP "" 10
+[[HH:]MM:]SS[.ms] oder smpte=[[[HH:]MM:]SS:]FF.
+
+.IP "\fB-every \fP\fIn\fP 	"
+Diese Option veranlasst \fBdvgrab\fP nur jedes \fIn\fP\-te Frame
+abzuspeichern (standardm\[:a]\[ss]ig alle Frames).
+
+.IP "\fB-f, -format \fP\fIdv1\fP | \fIdv2\fP | \fIavi\fP | \fIraw\fP | \fIdif\fP | \fIqt\fP | \fImov\fP | \fIjpeg\fP | \fIjpg\fP | \fImpeg2\fP | \fIhdv\fP\" 10
+Gibt das Format der Ausgabedatei(en) an. Das Dateiformat kann auch ermittelt
+werden, wenn Sie eine Erweiterung zum Namen \fBBasis\fP angeben. Die
+folgenden Erweiterungen werden erkannt: avi, dv, dif, mov, jpg, jpeg und m2t (HDV).
+
+.IP "" 10
+\fIdv1\fP und
+\fIdv2\fP sind beides AVI\-Dateien mit etwas unterschiedlichen Formaten.
+\fIdv2\fP speichert eine Tonspur zus\[:a]tzlich zur DV\-Videospur, was kompatibler
+mit anderen Anwendungen ist.
+\fIdv1\fP speichert eine einzige DV\-Spur, weil das DV\-Format grunds\[:a]tzlich
+Ton und Video mischt. Obwohl \fIdv1\fP kleinere Ausgabedateien erzeugt, verstehen
+es manche Anwendungen nicht und verlangen \fIdv2\fP. \fBdvgrab\fP kann sehr
+gro\[ss]e AVI\-Dateien anlegen, z.\ B. \[:u]ber 2 oder 4\ GB, aber die Kompatibilit\[:a]t mit
+anderen Anwendungen nimmt \[:u]ber einer Gr\[:o]\[ss]e von 1\ GB ab.
+
+.IP "" 10
+\fIraw\fP speichert die Daten unver\[:a]ndert mit der Dateiendung .dv. Diese
+Dateien k\[:o]nnen von einigen GNU/Linux\-Werkzeugen gelesen werden, genauso wie
+von »Apple Quicktime«.
+
+.IP "" 10
+\fIdif\fP eine Abwandlung des raw\-Formats; die Dateien erhalten die Endung .dif.
+Damit k\[:o]nnen sie sofort mit Programm »MainConcept MainActor5« geladen werden.
+
+.IP "" 10
+\fIqt\fP ist Quicktime\-Format, aber erfordert, dass \fBdvgrab\fP mit
+»libquicktime« kompiliert wurde.
+
+.IP "" 10
+\fIjpg\fP oder \fIjpeg\fP ist f\[:u]r eine Folge von JPEG\-Bildern, wenn \fBdvgrab\fP mit
+den Bibliotheken libdv und jpeglib kompiliert wurde. Diese Option kann nur bei
+DV-\Ger\[:a]ten benutzt werden, nicht bei HDV (MPEG2-TS).
+
+.IP "" 10
+\fImpeg2\fP oder \fIhdv\fP ist f\[:u]r MPEG-2-Transportstr\[:o]me, wenn z.\ B. ein
+HDV-Camcorder oder eine digitale TV-Settop-Box benutzt wird.
+
+.IP "" 10
+Voreingestellt ist \fIraw\fP.
+
+.IP "\fB-F, -frames \fP\fIZahl\fP" 10
+Diese Option veranlasst \fBdvgrab\fP h\[:o]chstens \fIZahl\fP Frames pro Datei
+abzuspeichern, bevor eine neue Datei angefangen wird, dabei bedeutet
+\fIZahl\fP = 0 unbegrenzt.
+Die Spieldauer der Datei h\[:a]ngt vom verwendeten Videosystem ab.
+PAL zeigt 25, NTSC ungef\[:a]hr 30 Frames pro Sekunde.
+
+.IP "\fB-guid \fP\fIHex-Zahl\fP 	"
+Wenn Sie mehr als ein DV\-Ger\[:a]t haben, w\[:a]hlen Sie eins aus, indem Sie die GUID
+\fIHex-Zahl\fP (hexadezimales Format) dieses Ger\[:a]ts angeben. Das Format ist
+in /proc/bus/ieee1394/devices oder bei Kernel 2.6 im Dateisystem /sys zu sehen.
+Wenn Sie eine GUID angeben, baut \fBdvgrab\fP eine Punkt-zu-Punkt-Verbindung auf,
+anstatt auf die Meldung des Ger\[:a]ts zu warten.
+Wenn Sie als \fIHex-Zahl\fP den Wert 1 eingeben, versucht \fBdvgrab\fP das Ger\[:a]t
+zu finden und baut eine Punkt-zu-Punkt-Verbindung auf. Das ist besonders bei
+MPEG2-TS Settop-Boxen n\[:u]tzlich, die h\[:a]ufig eine Verbindungsverwaltung erfordern,
+um mit der \[:U]bertragung zu beginnen.
+
+.IP "\fB-h, -help\fP" 10
+Zeigt eine Zusammenfassung der Optionen.
+
+.IP "\fB-I, -input \fP\fIDatei\fP\fP" 10
+Liest von der \fIDatei\fP anstelle von FireWire. Sie k\[:o]nnen '\-' f\[:u]r
+die Standardeingabe anstelle von \fB-stdin\fP verwenden.
+
+.IP "\fB-i, -interactive\fP" 10
+Versetzt \fBdvgrab\fP in den interaktiven Modus, sodass jeder Tastendruck
+die Kamera steuert oder den Import (capture) startet oder stoppt. Andernfalls
+l\[:a]uft \fBdvgrab\fP im Session\-Modus, wobei es sofort anf\[:a]ngt einzulesen
+und nach Festlegung oder Unterbrechung (durch STRG\-c) aufh\[:o]rt.
+
+.IP "\fB-jpeg-deinterlace\fP" 10
+Zusammen mit \fB-format\fP \fIjpeg\fP entflechtet (deinterlace) es die Ausgabe durch
+Verdoppelung der Zeilen im oberen Feld. Dies ist eine einfache Form des
+Deinterlace, wobei 50% der Aufl\[:o]sung verloren geht.
+
+.IP "\fB-jpeg-height \fP\fIZahl\fP" 10
+Zusammen mit \fB-format\fP \fIjpeg\fP wird die Ausgabe auf eine H\[:o]he von \fIZahl\fP
+(1 \- 2048) skaliert.
+
+.IP "\fB-jpeg-overwrite\fP" 10
+Zusammen mit \fB-format\fP \fIjpeg\fP wird die selbe Datei immer wieder \[:u]berschrieben,
+anstatt eine Folge von Dateien anzulegen.
+
+.IP "\fB-jpeg-quality \fP\fIZahl\fP" 10
+Zusammen mit \fB-format\fP \fIjpeg\fP setzt es die JPEG\-Qualit\[:a]tsstufe von 0
+(schlechteste) bis 100 (beste).
+
+.IP "\fB-jpeg-temp \fP\fIDatei\fP" 10
+Beim Erstellen des JPEGs wird eine tempor\[:a]re Datei benutzt, die in die Zieldatei
+umbenannt wird, wenn sie komplett ist. Das ist n\[:u]tzlich, wenn \fBdvgrab\fP mit
+der Option \fB-jpeg-overwrite\fP zur Erstellung eines Webcam-Bildes genutzt wird.
+
+.IP "\fB-jpeg-width \fP\fIZahl\fP" 10
+Zusammen mit \fB-format\fP \fIjpeg\fP wird die Ausgabe auf eine Breite von \fIZahl\fP
+(1 \- 2048) skaliert.
+
+.IP ""
+Die skalierte Breite und H\[:o]he des JPEGs m\[:u]ssen beide entweder
+kleiner oder gr\[:o]\[ss]er als die normale Frame\-Gr\[:o]\[ss]e sein.
+Zum Beispiel, auch wenn eine skalierte Breite von 700 und H\[:o]he von
+525 Bildpunkten ein Verh\[:a]ltnis von 4:3 ergibt, ist dieses Bild f\[:u]r
+NTSC unzul\[:a]ssig, weil 700 kleiner als die normale Breite von 720 ist,
+aber die H\[:o]he ist gr\[:o]\[ss]er als 480.
+
+.IP ""
+Weil DV nicht\-quadratische Bildpunkte verwendet, ist es gut, das Bild
+auf ein Seitenverh\[:a]ltnis von 4:3 mit quadratischen Bildpunkten
+skalieren zu k\[:o]nnen. F\[:u]r NTSC sind Beispielgr\[:o]\[ss]en:
+800x600, 640x480 und 320x240. F\[:u]r PAL beispielsweise 384x270 und 768x540.
+
+.IP "\fB-jvc-p25\fP 	" 10
+Entfernt die Signalisierung »remove_first_field« und setzt den Wert f\[:u]r
+Bilder pro Sekunde auf 25, um einen Datenstrom zu korrigieren, der in JVCs
+Modus »HDV P25« aufgenommen wurde.
+
+.IP "\fB-lockstep 	\fP" 10
+Richtet den Import an einem Vielfachen von \fB-frames\fP aus, basierend
+auf dem Zeitstempel.
+Das dient der Redundanz, wenn mehr als ein Rechner von dem selben FireWire-Ger\[:a]t
+importiert und Sie sicher stellen wollen, dass jede Datei das gleiche Filmmaterial
+enth\[:a]lt. Damit die Dateien auf jedem Rechner den gleichen Namen haben, benutzen
+Sie die Option \fB-timecode\fP und die gleiche \fIBasis\fP.
+
+.IP "\fB-lockstep_maxdrops\fP \fIAnzahl\fP" 10
+Wenn hintereinander die \fIAnzahl\fP Frames verworfen wurden, dann wird die Datei
+geschlossen und der Import am n\[:a]chsten »Lockstep«-Intervall wieder gestartet.
+Wenn die \fIAnzahl\fP gleich \-1 ist, dann ist diese Funtion ausgeschaltet.
+Das ist voreingestellt.
+
+.IP "\fB-lockstep_totaldrops\fP \fIZahl\fP" 10
+Wenn die absolute \fIAnzahl\fP Frames verworfen wurden, dann wird die Datei
+geschlossen und der Import am n\[:a]chsten »Lockstep«-Intervall wieder gestartet.
+Wenn die \fIAnzahl\fP gleich \-1 ist, dann ist diese Funtion ausgeschaltet.
+Das ist voreingestellt.
+
+.IP "\fB-noavc  	\fP" 10
+Schaltet die Kamerasteuerung aus. Das sollte benutzt werden, wenn
+Live\-Videodaten von der Videokamera im Kamera-Modus importiert werden, weil
+dabei das AV/C\-Kommando »Wiedergabe« die Aufnahme der Kamera starten w\[:u]rde.
+M\[:o]glicherweise wird das eingelegte Band \[:u]berspielt. Die Option wirkt auf den
+interaktiven und nicht\-interaktiven Modus, weil im letzteren Fall auch Start\-
+und Stopp\-Signale zur Kamera gesendet werden, wenn der Import gestartet oder
+gestoppt wird.
+
+.IP "\fB-nostop 	\fP" 10
+Beim Beenden von \fBdvgrab\fP wird der AV/C\-VTR\-Befehl »Stopp« nicht gesendet.
+
+.IP "\fB-opendml 	\fP" 10
+Zusammen mit \fB-format\fP \fIdv2\fP erstellt es eine OpenDML\-konforme DV\-AVI\-Datei
+vom Typ\ 2. Das ist f\[:u]r dv2\-Dateien >1GB erforderlich. dv1 unterst\[:u]tzt schon
+Dateien >1GB.
+
+.IP "\fB-r, -recordonly\fP" 10
+Wenn die Kamera im Aufnahmemodus ist, wird \fBdvgrab\fP nur dann Daten
+einlesen, wenn die Kamera aufnimmt und nicht in »Pause« ist. Normalerweise
+liest \fBdvgrab\fP immer Daten ein, wenn die Kamera im Aufnahmemodus ist und
+\[:u]berl\[:a]sst die Steuerung dem Benutzer des Rechners. Mit dieser Option
+verh\[:a]lt sich \fBdvgrab\fP wie ein Videorekorder, bei dem der Bediener der
+Kamera bestimmt, wann eingelesen wird. Das ist zusammen mit der Option
+\fB-autosplit\fP sehr n\[:u]tzlich, um f\[:u]r jede Szene eine eigene Datei
+anzulegen. Dazu wird AV/C ben\[:o]tigt und es funktioniert nicht zusammen
+mit der Option \fB-noavc\fP.
+
+.IP "\fB-rewind 	\fP" 10
+Die Kassette wird bis an den Anfang zur\[:u]ck gespult, bevor mit dem
+Dateneinlesen begonnen wird. Dazu wird AV/C ben\[:o]tigt und es funktioniert
+nicht im interaktiven Modus.
+
+.IP "\fB-showstatus\fP" 10
+Normalerweise werden Informationen zum Einlesen nach dem Schreiben jeder
+Datei angezeigt. Mit dieser Option wird der Importstatus w\[:a]hrend des
+Einlesens angezeigt und bei jedem Frame aktualisiert.
+
+.IP "\fB-s, -size \fP\fIZahl\fP" 10
+Diese Option veranlasst \fBdvgrab\fP h\[:o]chstens \fIZahl\fP Megabyte
+(eigentlich Mebibyte) pro Datei abzuspeichern, bevor eine neue Datei
+angelegt wird, dabei bedeutet \fIZahl\fP\ =\ 0 unbegrenzte Dateigr\[:o]\[ss]e.
+Voreingestellt ist die Grenze auf 1024 MB.
+
+.IP "\fB-srt    	\fP" 10
+Es werden  Untertiteldateien mit dem Aufnahmedatum und \-uhrzeit im
+»SRT«\-Format erstellt. F\[:u]r jede abgespeicherte Videodatei werden
+zwei zus\[:a]tzliche Dateien mit den Endungen ».srt0« und ».srt1« angelegt.
+Sie enthalten das Aufnahmedatum und \-uhrzeit als Untertitel im »SRT«\-Format.
+Die Datei »*.srt0« enth\[:a]lt Untertitel, deren Zeitbasis sich an der
+laufenden Zeit, vom Beginn der aktuellen Datei an, orientiert. Diese Datei
+sollte beim Umwandeln in ein Format wie AVI verwendet werden. Die Datei
+»*.srt1« enth\[:a]lt Untertitel, deren Zeitbasis sich an der von der
+Kamera \[:u]bertragenen Zeit orientiert. Das Programm »MPlayer« kann mit
+diesen Untertiteln umgehen.
+
+.IP "\fB-stdin  	\fP" 10
+Liest den Datenstrom aus einer Pipe an der Standardeingabe anstatt vom
+FireWire\-Treiber.
+
+.IP "\fB-timecode 	\fP" 10
+Baut den Zeitstempel des ersten Frames jeder Datei in den Dateinamen ein.
+
+.IP "\fB-t, -timestamp\fP" 10
+Baut Datum und Uhrzeit der Aufnahme in den Dateinamen ein.
+
+.IP "\fB-timesys 	\fP" 10
+Verwendet das Datum und \-uhrzeit des Systems anstatt der Aufnahme f\[:u]r
+den Dateinamen. Das ist n\[:u]tzlich, wenn Umwandler verwendet werden, die
+das Aufnahmedatum und \-uhrzeit in den DV\-Daten nicht \[:a]ndern.
+
+.IP "\fB-V, -v4l2 	\fP" 10
+Liest von einem USB\-Video\-Class\-(UVC)\-Ger\[:a]t ein, das DV unterst\[:u]tzt.
+Der Kernel\-Treiber »uvcvideo« via V4L2 wird benutzt.
+Das Standard-Ger\[:a]t ist /dev/video. Mit der Option \fB-input\fP k\[:o]nnen Sie
+eine andere Ger\[:a]tedatei einstellen.
+
+.IP "\fB-v, -version\fP" 10
+Zeigt die Programmversion.
+
+.IP "\fB-24p    	\fP" 10
+Setzt bei »Quicktime\ DV« die Framerate auf 24 fps in der Quicktime\-Datei. Das
+funktioniert aber nur, wenn die Aufnahme im Modus »24p« erfolgte.
+
+.IP "\fB-24pa   	\fP" 10
+Setzt bei »Quicktime\ DV« die Framerate auf 24 fps in der Quicktime\-Datei
+und macht zus\[:a]tzlich das »2:3:3:2\ pull\ down«\-Verfahren r\[:u]ckg\[:a]ngig,
+indem die »interlaced\ C\-Frames« entfernt werden. Das funktioniert aber nur,
+wenn die Aufnahme im Modus »24p\ advanced« erfolgte. Siehe http://www.adamwilt.com/24p/.
+
+.SH "BEISPIELE"
+.IP "\fBdvgrab foo-\fP" 10
+Importiert Videodaten von der standardm\[:a]\[ss]igen FireWire\-Quelle und speichert
+sie in Dateien \fBfoo\-001.avi\fP, \fBfoo\-002.avi\fP, usw.
+
+.IP "\fBdvgrab -frames 25 foo-\fP" 10
+Eine PAL\-Video\-Quelle vorausgesetzt, speichert dieses Kommando eine Sekunde
+Videodaten pro Datei.
+
+.IP "\fBdvgrab -autosplit -frames 750 -timestamp foo-\fP" 10
+Liest Videodaten von der voreingestellten FireWire\-Quelle ein, teilt sie in
+St\[:u]cke von 30 Sekunden (angenommen PAL) oder am Beginn einer neuen Aufnahme
+und benennt die Dateien nach den Datums\- und Zeitinformationen des Videostroms.
+
+.IP "\fBdvgrab -autosplit -size 1998 -csize 4400 -cmincutsize 10 foo-\fP" 10
+Importiert Videodaten von der standardm\[:a]\[ss]igen FireWire\-Quelle, teilt sie in
+St\[:u]cke, wenn eine neue Aufnahme beginnt oder die aktuelle Datei 1998 Megabyte
+\[:u]berschreitet oder die aktuelle Zusammenstellung von Dateien gr\[:o]\[ss]er als
+4400 Megabyte wird. Au\[ss]erdem beschr\[:a]nkt es die kleinste Dateigr\[:o]\[ss]e, die durch
+Teilung einer Zusammenstellung entsteht, auf 10 Megabyte.
+
+.IP "" 10
+Dieses Beispiel ist sehr gut geeignet, um DV\-Daten auf DVDs zu sichern, weil
+2\ GByte ungef\[:a]hr die maximale Dateigr\[:o]\[ss]e ist, mit der die (aktuelle)
+Linux\-Umsetzung des ISO9660\-Dateisystems umgehen kann.
+
+.IP "" 10
+Achtung: Es ist m\[:o]glich in ISO9660\-Dateisystemen Dateien gr\[:o]\[ss]er als 2\ GByte
+anzulegen, aber die aktuellen Linux\-Treiber f\[:u]r ISO9660 k\[:o]nnen diese nicht
+lesen. Neuere Kernel k\[:o]nnen evtl. mit Dateien gr\[:o]\[ss]er 2\ GByte im
+ISO9660\-Dateisystem umgehen.
+
+.IP "\fBdvgrab -format hdv -autosplit\fP" 10
+Liest von einem HDV\-Camcorder ein, versucht den Anfang jeder neuen Aufnahme zu
+erkennen und in einzelnen Dateien zu speichern.
+
+.IP "\fBdvgrab -format mpeg2 -guid 1\fP" 10
+Nimmt von einer digitalen TV\-Settop\-Box auf.
+
+.IP "\fBdvgrab -jpeg-over -jpeg-w=320 -jpeg-h=240 -d smpte=1 webcam.jpeg\fP" 10
+Liest ein einzelnes Frame ein, speichert es als JPEG mit dem Namen »webcam.jpg«
+und endet.
+Dieses Beispiel zeigt auch die Verwendung von Optionen. Sie müssen von einem langen
+Optionsnamen nur so viel angeben, damit er eindeutig ist. Sie k\[:o]nnen Leerzeichen
+oder Gleichheitzeichen benutzen, um den Optionsnamen und den Wert zu trennen.
+Das Dateiformat wird von der Erweiterung des Dateinamens abgeleitet. Weil die
+Option \fB-jpeg-overwrite\fP verwendet wird, ist der Dateiname genau »webcam.jpeg«
+und enth\[:a]lt keine Zahlen.
+
+.IP "\fBdvgrab -V\fP" 10
+Importiert \[:u]ber USB von einem UVC-konformen DV\-Ger\[:a]t.
+
+.IP "\fBdvgrab -v4l -input /dev/video1\fP" 10
+Importiert \[:u]ber USB von einem UVC-konformen DV\-Ger\[:a]t und benutzt die
+Ger\[:a]tedatei /dev/video1.
+
+.IP "\fBdvgrab -format=hdv -autosplit=28800 -srt foo-\fP" 10
+Liest von einem HDV\-Camcorder ein und speichert jede Aufnahme in einer
+eigenen Datei, wenn sie einen Zeitunterschied von mehr als 8 Stunden zur
+vorherigen hat. Das erzeugt eine eigene Datei für jeden Tag (gut f\[:u]r
+Urlaubsvideos). Au\[ss]erdem werden Untertiteldateien angelegt. Angenommen,
+die Dateien »foo\-001.m2t« und »foo\-002.m2t« werden erstellt, so werden
+auch die dazu geh\[:o]renden Untertiteldateien »foo\-001.srt0«, »foo\-001.srt1«,
+»foo\-002.srt0« und »foo\-002.srt1« angelegt. Die Dateien k\[:o]nnen benutzt
+werden, um Aufnahmedatum und \-uhrzeit beim Anschauen des Videos anzuzeigen.
+
+
+.SH "AUTOR"
+.PP
+Dan Dennedy <dan@dennedy.org> und Daniel Kobras <kobras@debian.org>.
+Erik Schanze <eriks@debian.org> hat sie ins Deutsche \[:u]bersetzt.
+
+.PP
+Mehr Informationen und Unterst\[:u]tzung finden Sie auf der Webseite
+http://www.kinodv.org/ .
